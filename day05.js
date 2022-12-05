@@ -30,20 +30,21 @@ let reorderStacks = input => {
   }
   stacks.map(stack => console.log("built stack: " + stack));
 
-  let movementDescriptionPattern = /move (\d) from (\d) to (\d)/;
+  let movementDescriptionPattern = /move (\d+) from (\d+) to (\d+)/;
   let moveItems = (nItems, from, to) => {
     console.log("move " + nItems + " from " + from + " to " + to);
     for (let i = 0; i < nItems; i++) {
-      to.push(from.pop());
+      stacks[to-1].push(stacks[from-1].pop());
     }
+    console.log("from is now " + stacks[from-1] + " to is now " + stacks[to-1]);
   };
   movementsDescription.split("\n")
     .map(movement => movementDescriptionPattern.exec(movement))
-    .map(([_, nItems, from, to]) => moveItems(nItems, stacks[from-1], stacks[to-1]));
-  return stacks.map(stack => stack[0]).join("");
+    .map(([_, nItems, from, to]) => moveItems(nItems, from, to));
+  return stacks.map(stack => stack.pop()).join("");
 };
 
 reorderStacks(sampleInput);
 
-let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trim();
+let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
 reorderStacks(puzzleInput);
