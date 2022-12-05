@@ -1,16 +1,4 @@
-// Day 5
-// Part 1
-let sampleInput = "    [D]    \n"+
-"[N] [C]    \n"+
-"[Z] [M] [P]\n"+
-" 1   2   3 \n"+
-"\n"+
-"move 1 from 2 to 1\n"+
-"move 3 from 1 to 3\n"+
-"move 2 from 2 to 1\n"+
-"move 1 from 1 to 2";
-
-let reorderStacks = input => {
+let reorderStacks = (input, moveItemsOp) => {
   let [initialStacksDescription, movementsDescription] = input.split("\n\n");
   let stackLevels = initialStacksDescription.split("\n").reverse();
   let stackDesignators = stackLevels.shift();
@@ -31,20 +19,33 @@ let reorderStacks = input => {
   stacks.map(stack => console.log("built stack: " + stack));
 
   let movementDescriptionPattern = /move (\d+) from (\d+) to (\d+)/;
-  let moveItems = (nItems, from, to) => {
-    console.log("move " + nItems + " from " + from + " to " + to);
-    for (let i = 0; i < nItems; i++) {
-      stacks[to-1].push(stacks[from-1].pop());
-    }
-    console.log("from is now " + stacks[from-1] + " to is now " + stacks[to-1]);
-  };
   movementsDescription.split("\n")
     .map(movement => movementDescriptionPattern.exec(movement))
-    .map(([_, nItems, from, to]) => moveItems(nItems, from, to));
+    .map(([_, nItems, from, to]) => moveItemsOp(nItems, stacks[from-1], stacks[to-1]));
+  stacks.map(stack => console.log("stack after: " + stack));
   return stacks.map(stack => stack.pop()).join("");
 };
 
-reorderStacks(sampleInput);
+let moveItemsOp9000 = (nItems, from, to) => {
+    for (let i = 0; i < nItems; i++) {
+      to.push(from.pop());
+    }
+  };
+
+// test
+reorderStacks(sampleInput, moveItemsOp9000);
 
 let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
-reorderStacks(puzzleInput);
+reorderStacks(puzzleInput, moveItemsOp9000);
+
+//Part 2
+let moveItemsOp9001 = (nItems, from, to) => {
+    console.log("nItems: " + nItems + " from: " + from.join("-") + " to: " + to.join("-"));
+    to.push(...from.splice(from.length-nItems,nItems));
+	console.log("after from: " + from.join("-") + " to: " + to.join("-"));
+  };
+  
+// test
+reorderStacks(sampleInput, moveItemsOp9001);
+
+reorderStacks(puzzleInput, moveItemsOp9001);
