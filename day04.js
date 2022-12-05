@@ -52,4 +52,5 @@ let countPartialOverlaps = (input) =>
 countPartialOverlaps(sampleInput);
 // 2
 
+let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trim();
 countPartialOverlaps(puzzleInput);
