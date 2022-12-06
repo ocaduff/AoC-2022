@@ -7,8 +7,7 @@ let sampleInput = ["mjqjpqmgbljsphdztnvjfqwrcgsmlb",
                    "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg",
                    "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"];
 
-let findMarkerStart = input => {
-  const packetLength = 4;
+let findMarkerStart = (input, packetLength) => {
   const seenSignals = [];
   var currentPosition = 0;
   while (!formsStartPacket(input.charAt(currentPosition), seenSignals, packetLength)) {
@@ -29,7 +28,15 @@ let formsStartPacket = (latestSignal, seenSignals, packetLength) => {
 }
 
 // test
-findMarkerStart(sampleInput[0]);
-sampleInput.map(findMarkerStart);
+findMarkerStart(sampleInput[0], 4);
+sampleInput.map(input => findMarkerStart(input, 4));
 let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
-findMarkerStart(puzzleInput);
+findMarkerStart(puzzleInput, 4);
+
+// Part 2
+let sampleInputPart2 = ["bvwbjplbgvbhsrlpgdmjqwftvncz",
+                        "nppdvjthqldpwncqszvftbrmjlhg",
+                        "nznrnfrfntjfmvfwmzdfjlvtqnbhcprsg",
+                        "zcfzfwzzqfrljwzlrfnpqdbhtmscgvjw"];
+sampleInput.map(input => findMarkerStart(input, 14));
+findMarkerStart(puzzleInput, 14);
