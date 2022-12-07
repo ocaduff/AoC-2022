@@ -80,7 +80,6 @@ const commands = {
 };
 
 const readLsOutput = (currentDir, lsOutput) => {
-  console.log("reading lsOutput: " + lsOutput);
   const fileLine = /(\d+) (.+)$/.exec(lsOutput);
   if (fileLine) {
     currentDir.contents[fileLine[2]] = createFile(fileLine[2], parseInt(fileLine[1]));
@@ -131,3 +130,12 @@ let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight(
 let puzzleFs = buildFileSystem(puzzleInput.split("\n"));
 collectMatchingDirs(puzzleFs, (dir) => dir.size() <= 100000).map(dir => dir.size()).reduce((a,b) => a+b, 0);
 // 1427048
+
+//Part 2
+//test
+collectMatchingDirs(sampleFs, (dir) => dir.size() >= 8381165).sort((a, b) => a.size() - b.size())[0].size();
+// 24933642
+
+let freeSpace = 70000000 - puzzleFs.size();
+let spaceToFreeUp = 30000000 - freeSpace;
+collectMatchingDirs(puzzleFs, (dir) => dir.size() >= spaceToFreeUp).sort((a, b) => a.size() - b.size())[0].size();
