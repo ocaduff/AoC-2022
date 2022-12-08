@@ -55,3 +55,32 @@ let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight(
 let puzzleTree = parseTree(puzzleInput);
 let puzzleTreeVisible = traverseTree(puzzleTree);
 countTrees(puzzleTreeVisible);
+
+// Part 2
+let computeVisibility = (tree, i, j ) => {
+  let [up, down, left, right ] = new Array(4).fill(1);
+  while (i - up > 0 && tree[i][j] > tree[i-up][j]) up++;
+  while (j + right < tree[i].length - 1 && tree[i][j] > tree[i][j+right]) right++;
+  while (i + down < tree.length - 1 && tree[i][j] > tree[i+down][j]) down++;
+  while (j - left > 0 && tree[i][j] > tree[i][j-left]) left++;
+  return up * down * right * left;
+}
+
+let getMaxVisibility = (tree) => {
+  var maxVisibility = 0;
+  for (let i = 0; i < tree.length; i++) {
+    for (let j = 0; j < tree[i].length; j++) {
+      maxVisibility = Math.max(maxVisibility, computeVisibility(tree, i, j));
+    }
+  }
+  return maxVisibility;
+}
+
+getMaxVisibility(sampleTree);
+
+//test
+computeVisibility(sampleTree, 1, 2);
+
+computeVisibility(sampleTree, 3, 2);
+
+getMaxVisibility(puzzleTree);
