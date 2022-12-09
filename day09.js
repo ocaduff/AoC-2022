@@ -1,3 +1,5 @@
+// Day 9
+// Part 1
 let sampleInput = `R 4
 U 4
 L 3
@@ -24,43 +26,109 @@ let move = (currentPosition, direction) => {
   }
 }
 
-let follow = (pointA, pointB) => {
-  if (Math.abs(pointA.x - pointB.x) <= 1
-      && Math.abs(pointA.x - pointB.x) <= 1) {
+let follow = (tail, head) => {
+  if (Math.abs(tail.x - head.x) <= 1
+      && Math.abs(tail.y - head.y) <= 1) {
     return "-";
   }
-  if (pointA.x - pointB.x > 1) {
+  if (tail.x - head.x == 1) {
     return "L";
   }
-  if (pointB.x - pointA.x > 1) {
+  if (head.x - tail.x == 1) {
     return "R";
   }
-  if (pointA.y - pointB.y > 1) {
+  if (tail.y - head.y == 1) {
     return "D";
   }
-  if (pointB.y - pointA.y > 1) {
+  if (head.y - tail.y == 1) {
     return "U";
   }
+  return "-";
+}
+
+let drag = (tail, head, tailDirection) => {
+  if (tail.x - head.x == 2) {
+    return "L";
+  }
+  if (head.x - tail.x == 2) {
+    return "R";
+  }
+  if (tail.y - head.y == 2) {
+    return "D";
+  }
+  if (head.y - tail.y == 2) {
+    return "U";
+  }
+  return "-";
+}
+
+let printRope = (tail, head, xdim, ydim) => {
+  let field = [];
+  for (let i = 0; i < xdim; i++) {
+    let line = "";
+    for (let j = 0; j < ydim; j++) {
+      if (head.x == j && head.y == i){
+        line += "H";
+      } else if (tail.x == j && tail.y == i){
+        line += "T";
+      } else {
+        line += ".";
+      }
+    }
+    field.push(line);
+  }
+  console.log(field.reverse().join("\n"));
+}
+
+let printVisitedFields = (visited, minX, minY, maxX, maxY) => {
+  let field = [];
+  for (let i = minX; i <= maxX; i++) {
+    let line = "";
+    for (let j = minY; j <= maxY + 1; j++) {
+      if (j==0 && i == 0) {
+        line += "s";
+      } else if (visited.has(j+","+i)){
+        line += "#";
+      } else {
+        line += ".";
+      }
+    }
+    field.push(line);
+  }
+  console.log(field.reverse().join("\n"));
+  console.log("minX, minY, maxX, maxY: " + minX + ", " + minY + ", " + maxX + ", " + maxY);
 }
 
 let followHead = input => {
   var head = point(0,0);
   var tail = point(0,0);
   const seenPointsTail = new Set();
+  var minX = 0;
+  var maxX = 0;
+  var minY = 0;
+  var maxY = 0;
   input.split("\n").forEach(line => {
-    let [_, direction, moves] = /(\w) (\d)/.exec(line);
-    console.log("input: " + direction + " " + moves);
+    let [_, direction, moves] = /(\w) (\d+)/.exec(line);
+    console.log("== " + direction + " " + moves + " ==");
     for (let i = 0; i < moves; i++) {
       head = move(head, direction);
-      console.log("new head: (" + head.x + ","+head.y+")");
       const tailDirection = follow(tail, head);
-      console.log("following: " + tailDirection);
+      const dragDirection = drag(tail, head, tailDirection);
       tail = move(tail, tailDirection);
-      console.log("new tail: (" + tail.x + ","+tail.y+")");
-      seenPointsTail.add(tail);
+      tail = move(tail, dragDirection);
+      //printRope(tail, head, 5, 6);
+      //console.log();
+      seenPointsTail.add(tail.x + ","+ tail.y);
+      minX = Math.min(minX, head.x, tail.x);
+      minY = Math.min(minY, head.y, tail.y);
+      maxX = Math.max(maxX, head.x, tail.x);
+      maxY = Math.max(maxY, head.y, tail.y);
     }
   });
-  seenPointsTail.size;
+  printVisitedFields(seenPointsTail, minX, minY, maxX, maxY);
+  console.log("visited points: " + seenPointsTail.size);
 }
 
 followHead(sampleInput);
+let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
+followHead(puzzleInput);
