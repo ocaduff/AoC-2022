@@ -82,9 +82,9 @@ let printRope = (tail, head, xdim, ydim) => {
 
 let printVisitedFields = (visited, minX, minY, maxX, maxY) => {
   let field = [];
-  for (let i = minX; i <= maxX; i++) {
+  for (let i = minY - 1; i <= maxY; i++) {
     let line = "";
-    for (let j = minY; j <= maxY + 1; j++) {
+    for (let j = minX - 1; j <= maxX; j++) {
       if (j==0 && i == 0) {
         line += "s";
       } else if (visited.has(j+","+i)){
@@ -116,8 +116,6 @@ let followHead = input => {
       const dragDirection = drag(tail, head, tailDirection);
       tail = move(tail, tailDirection);
       tail = move(tail, dragDirection);
-      //printRope(tail, head, 5, 6);
-      //console.log();
       seenPointsTail.add(tail.x + ","+ tail.y);
       minX = Math.min(minX, head.x, tail.x);
       minY = Math.min(minY, head.y, tail.y);
@@ -132,3 +130,46 @@ let followHead = input => {
 followHead(sampleInput);
 let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
 followHead(puzzleInput);
+
+// Part 2
+let followHeadLongTail = input => {
+  var knots = new Array(10).fill(point(0,0));
+  const seenPointsTail = new Set();
+  var minX = 0;
+  var maxX = 0;
+  var minY = 0;
+  var maxY = 0;
+  input.split("\n").forEach(line => {
+    let [_, direction, moves] = /(\w) (\d+)/.exec(line);
+    console.log("== " + direction + " " + moves + " ==");
+    for (let i = 0; i < moves; i++) {
+      knots[0] = move(knots[0], direction);
+      for (let i = 1; i < knots.length; i++) {
+        const tailDirection = follow(knots[i], knots[i-1]);
+        const dragDirection = drag(knots[i], knots[i-1], tailDirection);
+        knots[i] = move(knots[i], tailDirection);
+        knots[i] = move(knots[i], dragDirection);
+      }
+      const tail = knots[knots.length-1];
+      const head = knots[0];
+      seenPointsTail.add(tail.x + ","+ tail.y);
+      minX = Math.min(minX, head.x, tail.x);
+      minY = Math.min(minY, head.y, tail.y);
+      maxX = Math.max(maxX, head.x, tail.x);
+      maxY = Math.max(maxY, head.y, tail.y);
+    }
+  });
+  printVisitedFields(seenPointsTail, minX, minY, maxX, maxY);
+  console.log("visited points: " + seenPointsTail.size);
+}
+
+let sampleInput2 = `R 5
+U 8
+L 8
+D 3
+R 17
+D 10
+L 25
+U 20`;
+followHeadLongTail(sampleInput2);
+followHeadLongTail(puzzleInput);
