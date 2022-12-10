@@ -183,3 +183,49 @@ processSignals(sampleInput);
 let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
 processSignals(puzzleInput);
 
+
+//Part 2
+let render = screen => {
+    for (let row = 0; row < 6; row ++) {
+        console.log(screen.slice(row * 40, (row + 1) * 40).join(""));
+    }
+}
+
+let drawPixel = (screen, spritePosition, cycle) => {
+    let cycleIndex = (cycle - 1) % 40;
+    if (cycleIndex >= spritePosition - 1
+        && cycleIndex <= spritePosition + 1) {
+        screen[cycle - 1] = "#";
+    }
+}
+
+let beamSignals = input => {
+    let instructions = input.split("\n")
+        .map(line => /addx (\-?\d+)/.exec(line))
+        .map(match => match? parseInt(match[1]): null);
+    const measurementCycles = [20, 60, 100, 140 ,180, 220];
+    const screen = new Array(40 * 6).fill(".");
+    screen[0] = "#"
+    var measurementsSum = 0;
+    var register = 1;
+    var cycle = 1;
+    var busy = null;
+    while (instructions.length > 0) {
+        cycle++;
+        if (!busy) {
+            let addition = instructions.shift();
+            if (addition) {
+                busy = register + addition;
+            }
+        } else {
+            // one cycle passed => make result available
+            register = busy;
+            busy = null;
+        }
+        drawPixel(screen, register, cycle);
+    }
+    render(screen);
+}
+
+beamSignals(sampleInput);
+beamSignals(puzzleInput);
