@@ -95,3 +95,46 @@ console.log(doMonkeyBusiness(sampleInput));
 
 let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
 console.log(doMonkeyBusiness(puzzleInput));
+
+//Part 2
+// worry level: instead of div by 3, do mod product of all divisors to prevent big numbers
+let doMonkeyBigBusiness = (input) => {
+    let monkeys = input.split("\n\n")
+          .map(monkeyDef => monkeyRegex.exec(monkeyDef))
+          .map(match => match.groups)
+          .map(m => Monkey(
+              m.startingItems.split(", ").map(item => parseInt(item)),
+              function(old) { return doOperation(old, m.operation) },
+              parseInt(m.divisorForTest),
+              parseInt(m.targetMonkeyIfTrue),
+              parseInt(m.targetMonkeyIfFalse)
+          ));
+    
+    const divisorsProduct = monkeys
+        .map(monkey => monkey.divisorForTest)
+        .reduce((a, b) => a * b, 1)
+
+    for (let round = 0; round < 10000; round++) {
+        monkeys
+            .map(monkey => {
+                while (monkey.items.length > 0) {
+                    let item = monkey.items.shift();
+                    var worryLevel = item;
+                    worryLevel = monkey.operation(worryLevel);
+                    worryLevel = worryLevel % divisorsProduct;
+                    const targetMonkey = worryLevel % monkey.divisorForTest == 0?
+                        monkeys[monkey.targetMonkeyIfTrue]:
+                        monkeys[monkey.targetMonkeyIfFalse];
+                    targetMonkey.items.push(worryLevel);
+                    monkey.nInspections++;
+                }
+            });
+        }
+    const ranking = monkeys.sort((a, b) => b.nInspections - a.nInspections);
+    return ranking[0].nInspections * ranking[1].nInspections;
+};
+
+//test
+console.log(doMonkeyBigBusiness(sampleInput));
+
+console.log(doMonkeyBigBusiness(puzzleInput));
