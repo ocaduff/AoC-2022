@@ -74,6 +74,7 @@ let cave = (input) => {
 
   let trickleSand = point => {
     if (isOutsideMap(point)) {
+      isOverflow = true;
     } else if (isFree(point.x, point.y+1)) {
       point.y++;
       trickleSand(point);
@@ -125,3 +126,24 @@ countSand(sampleInput);
 
 let puzzleInput = document.getElementsByTagName("pre")[0].textContent.trimRight();
 countSand(puzzleInput);
+
+// part 2
+let countSandWithGround = input => {
+  const caveWithoutGround = cave(input);
+  const newGroundY = caveWithoutGround.maxY + 2;
+  const newGroundXMin = caveWithoutGround.minX - newGroundY;
+  const newGroundXMax = caveWithoutGround.maxX + newGroundY;
+  const caveWithGroundInput = input + "\n" + 
+    newGroundXMin + "," + newGroundY + " -> "
+    + newGroundXMax + "," + newGroundY;
+  console.log(caveWithGroundInput);
+  const caveWithGround = cave(caveWithGroundInput);
+  caveWithGround.pourSand();
+  caveWithGround.print();
+  console.log(caveWithGround.count("o"));
+}
+
+//test
+countSandWithGround(sampleInput);
+
+countSandWithGround(puzzleInput);
