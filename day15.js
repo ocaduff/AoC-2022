@@ -87,12 +87,6 @@ let cave = (input) => {
     },
     part2: maxXYCoord => {
       const intersections = new Set();
-      let findIntersections = (line, i) => {
-        for (let j = i; j < sensorNet.length; j++) {
-          sensorNet[j].borderlines.forEach(borderLine => findIntersections(borderLine, i++));
-          intersections.concat(...sensorNet[j].borderlines.map(lineB => intersect(line, lineB)).filter(x => x));
-        }
-      }
       sensorNet
         //corners
         .forEach(pair => pair.corners =
